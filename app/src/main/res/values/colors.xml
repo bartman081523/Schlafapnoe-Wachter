@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    
     <color name="primaryColor">#2196F3</color>
     <color name="primaryDarkColor">#1976D2</color>
     <color name="secondaryColor">#FF9800</color>
-    <color name="backgroundColor">#F5F5F6</color>
-    <color name="cardColor">#FFFFFF</color>
-    <color name="textColorPrimary">#212121</color>
-    <color name="textColorSecondary">#757575</color>
+    
+    <!-- Light Theme -->
+    <color name="backgroundColorLight">#F5F5F6</color>
+    <color name="cardColorLight">#FFFFFF</color>
+    <color name="textColorPrimaryLight">#212121</color>
+    <color name="textColorSecondaryLight">#757575</color>
+    
+    <!-- Dark Theme -->
+    <color name="backgroundColorDark">#121212</color>
+    <color name="cardColorDark">#1E1E1E</color>
+    <color name="textColorPrimaryDark">#E0E0E0</color>
+    <color name="textColorSecondaryDark">#9E9E9E</color>
     
     <color name="status_ready">#4CAF50</color>
     <color name="status_alarm">#F44336</color>
     <color name="status_locked">#FF9800</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 </resources>

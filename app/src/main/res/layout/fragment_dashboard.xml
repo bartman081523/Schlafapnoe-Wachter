@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundColor"
     android:fillViewport="true">
 
     <LinearLayout
@@ -14,12 +13,11 @@
 
         <!-- Status Card -->
         <com.google.android.material.card.MaterialCardView
+            style="@style/Style.ApneaCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="@color/cardColor">
+            app:cardElevation="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,7 +39,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/status_ready"
                     android:textSize="28sp"
-                    android:textColor="@color/textColorPrimary"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -50,7 +47,6 @@
                     android:layout_height="wrap_content"
                     android:text="System ist bereit"
                     android:textSize="16sp"
-                    android:textColor="@color/textColorSecondary"
                     android:layout_marginTop="8dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -80,12 +76,10 @@
 
         <!-- Auto Record Switch -->
         <com.google.android.material.card.MaterialCardView
+            style="@style/Style.ApneaCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/cardColor">
+            android:layout_marginBottom="24dp">
             
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switchAutoRecord"
@@ -95,11 +89,10 @@
                 android:text="@string/switch_auto_record"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/textColorPrimary"
                 android:checked="false" />
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Alarm Stop (Hidden initially) -->
+        <!-- Alarm Stop -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnStopAlarm"
             android:layout_width="match_parent"
@@ -129,7 +122,6 @@
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:text="@string/btn_exit"
-            android:textColor="@color/textColorSecondary"
             android:textSize="16sp"
             android:layout_marginBottom="24dp"/>
 

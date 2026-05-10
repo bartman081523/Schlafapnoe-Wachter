@@ -1,22 +1,22 @@
 R_DEF: Internal format may change without notice
 local
-color backgroundColor
+color backgroundColorDark
+color backgroundColorLight
 color black
-color cardColor
+color cardColorDark
+color cardColorLight
 color primaryColor
 color primaryDarkColor
-color purple_200
-color purple_500
-color purple_700
 color secondaryColor
 color status_alarm
 color status_locked
 color status_ready
-color teal_200
-color teal_700
-color textColorPrimary
-color textColorSecondary
+color textColorPrimaryDark
+color textColorPrimaryLight
+color textColorSecondaryDark
+color textColorSecondaryLight
 color white
+id alarmDurSeekBar
 id apneaChartView
 id btnApplyRecommendation
 id btnExit
@@ -39,6 +39,7 @@ id triggerSeekBar
 id tvAnalysisTitle
 id tvHints
 id tvSummary
+id txtAlarmDurVal
 id txtCooldownVal
 id txtSilenceVal
 id txtSnoreVal
@@ -71,4 +72,5 @@ string switch_auto_record
 string tab_dashboard
 string tab_history
 string tab_settings
+style Style.ApneaCard
 style Theme.ApneaApp

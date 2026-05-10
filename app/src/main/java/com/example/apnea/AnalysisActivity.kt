@@ -34,107 +34,99 @@ class AnalysisActivity : AppCompatActivity() {
         var alarmCount = 0
         var totalLines = 0
         
-        // Heuristik für alte Versionen: Zähle Phasen mit extrem hohem Apnoe-Score (>0.9) 
-        // als potenziellen Alarm, falls kein ALARM_START Event gefunden wird.
-        var legacyApneaCounter = 0
         var legacyAlarmsHeuristic = 0
+        var apneaCounter = 0
+        
+        // Metadata from file
+        var recordedSilenceThresh = 250
+        var isTestModeFile = false
 
         try {
             BufferedReader(FileReader(file)).use { br ->
-                val header = br.readLine() // Read header
                 var line = br.readLine()
                 while (line != null) {
-                    try {
-                        val tokens = line.split(",")
-                        if (tokens.size >= 2) {
-                            val eventType = tokens[1]
-                            
-                            if (eventType == "ALARM_START") {
-                                alarmCount++
-                            } else if (eventType.startsWith("ML_") || tokens.size >= 6) {
-                                // Versuche Scores zu extrahieren (Robust gegen fehlende Spalten)
-                                val snore = if (tokens.size > 2) tokens[2].toFloatOrNull() ?: 0f else 0f
-                                val apnea = if (tokens.size > 3) tokens[3].toFloatOrNull() ?: 0f else 0f
-                                
-                                snoreData.add(snore)
-                                apneaData.add(apnea)
-                                
-                                // Heuristik für alte Logs
-                                if (apnea > 0.95f) {
-                                    legacyApneaCounter++
-                                } else {
-                                    if (legacyApneaCounter >= 2) { // min 10s hohe Konfidenz
-                                        legacyAlarmsHeuristic++
+                    if (line.startsWith("#SETTINGS:")) {
+                        // Parse settings: #SETTINGS:vol=50,sil=250.0,...
+                        val parts = line.removePrefix("#SETTINGS:").split(",")
+                        for (p in parts) {
+                            if (p.startsWith("sil=")) recordedSilenceThresh = p.substringAfter("=").toDoubleOrNull()?.toInt() ?: 250
+                            if (p.startsWith("test=")) isTestModeFile = p.substringAfter("=").toBoolean()
+                        }
+                    } else if (!line.startsWith("Timestamp")) {
+                        try {
+                            val tokens = line.split(",")
+                            if (tokens.size >= 2) {
+                                val eventType = tokens[1]
+                                if (eventType == "ALARM_START") {
+                                    alarmCount++
+                                } else if (eventType.startsWith("ML_")) {
+                                    val snore = if (tokens.size > 2) tokens[2].toFloatOrNull() ?: 0f else 0f
+                                    val apnea = if (tokens.size > 3) tokens[3].toFloatOrNull() ?: 0f else 0f
+                                    snoreData.add(snore)
+                                    apneaData.add(apnea)
+                                    
+                                    // Heuristic for old logs or missing alarm markers
+                                    if (apnea > 0.95f) apneaCounter++
+                                    else {
+                                        if (apneaCounter >= 2) legacyAlarmsHeuristic++
+                                        apneaCounter = 0
                                     }
-                                    legacyApneaCounter = 0
                                 }
                             }
-                        }
-                    } catch (e: Exception) {
-                        // Überspringe korrupte Zeilen
+                        } catch (e: Exception) {}
+                        totalLines++
                     }
-                    totalLines++
                     line = br.readLine()
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) { e.printStackTrace() }
 
-        // Falls keine echten ALARM_START Events da sind (Legacy), nimm die Heuristik
         val finalAlarmCount = if (alarmCount > 0) alarmCount else legacyAlarmsHeuristic
         val isLegacy = alarmCount == 0 && legacyAlarmsHeuristic > 0
 
         tvSummary.text = "Datenpunkte: $totalLines\nAusgelöste Alarme: $finalAlarmCount" + 
-                        (if (isLegacy) " (geschätzt aus Rohdaten)" else "")
+                        (if (isLegacy) " (geschätzt)" else "") +
+                        (if (isTestModeFile) " [TESTLAUF]" else "")
         
         val factor = (snoreData.size / 1000).coerceAtLeast(1)
-        val displaySnore = snoreData.filterIndexed { index, _ -> index % factor == 0 }
-        val displayApnea = apneaData.filterIndexed { index, _ -> index % factor == 0 }
-        
-        chartView.setData(displaySnore, displayApnea)
+        chartView.setData(
+            snoreData.filterIndexed { index, _ -> index % factor == 0 },
+            apneaData.filterIndexed { index, _ -> index % factor == 0 }
+        )
 
+        // RECOMMENDATION BRAIN
         var hints = "Hinweise zur Optimierung:\n"
-        var canApply = false
         var recommendedSilChange = 0
-        var recommendedTriChange = 0
         
-        if (finalAlarmCount == 0) {
-            hints += "- Keine Alarme erkannt. Falls Sie Atemaussetzer hatten, reduzieren Sie die 'Stille-Schwelle' (RMS).\n"
-            canApply = true
-            recommendedSilChange = -50
-        } else if (finalAlarmCount > 15) {
-            hints += "- Sehr viele Alarme ($finalAlarmCount). Möglicherweise ist die App zu empfindlich.\n"
-            canApply = true
-            recommendedSilChange = 50
+        if (isTestModeFile) {
+            hints += "- Dies war ein Testlauf. Keine automatische Optimierung empfohlen.\n"
         } else {
-            hints += "- Alarmanzahl ($finalAlarmCount) im erwarteten Rahmen für unbehandelte Apnoe.\n"
+            if (finalAlarmCount == 0) {
+                hints += "- Keine Alarme erkannt. Falls Sie Aussetzer hatten, senken Sie die Stille-Schwelle.\n"
+                recommendedSilChange = -50
+            } else if (finalAlarmCount > 15) {
+                hints += "- Sehr viele Alarme ($finalAlarmCount). Möglicherweise zu empfindlich.\n"
+                recommendedSilChange = 50
+            } else {
+                hints += "- Optimale Alarmanzahl ($finalAlarmCount).\n"
+            }
         }
-        
-        tvHints.text = hints
 
-        if (canApply) {
+        if (recommendedSilChange != 0 && !isTestModeFile) {
             btnApply.visibility = android.view.View.VISIBLE
             btnApply.setOnClickListener {
                 val prefs = getSharedPreferences("ApneaPrefs", MODE_PRIVATE)
-                val currentSil = prefs.getInt("silence", 250)
-                val currentTri = prefs.getInt("trigger", 12)
+                // Use the threshold that was active DURING the recording as baseline!
+                val newSil = (recordedSilenceThresh + recommendedSilChange).coerceIn(50, 1000)
                 
-                val newSil = (currentSil + recommendedSilChange).coerceIn(50, 1000)
-                val newTri = (currentTri + recommendedTriChange).coerceIn(5, 30)
-                
-                prefs.edit().apply {
-                    putInt("silence", newSil)
-                    putInt("trigger", newTri)
-                }.apply()
-                
-                // Force sync in MainActivity if running
+                prefs.edit().putInt("silence", newSil).apply()
                 MainActivity.sil = newSil
-                MainActivity.tri = newTri
                 
-                android.widget.Toast.makeText(this, "Einstellungen wurden optimiert", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(this, "Optimiert auf $newSil RMS", android.widget.Toast.LENGTH_SHORT).show()
                 btnApply.visibility = android.view.View.GONE
             }
         }
+        
+        tvHints.text = hints
     }
 }

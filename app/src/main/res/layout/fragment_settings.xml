@@ -2,8 +2,7 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/backgroundColor">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,33 +21,32 @@
             android:gravity="center"/>
 
         <!-- Lautstärke -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/cardColor"
-            android:layout_marginBottom="16dp">
+        <com.google.android.material.card.MaterialCardView style="@style/Style.ApneaCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_volume" android:textColor="@color/textColorPrimary" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_volume" android:textSize="16sp" android:textStyle="bold"/>
                     <TextView android:id="@+id/txtVolumeVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="50%" android:textStyle="bold" android:textColor="@color/primaryColor" android:textSize="16sp"/>
                 </LinearLayout>
                 <SeekBar android:id="@+id/volumeSeekBar" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100" android:progress="50" android:layout_marginTop="16dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Stille -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/cardColor"
-            android:layout_marginBottom="16dp">
+        <!-- Alarm Dauer -->
+        <com.google.android.material.card.MaterialCardView style="@style/Style.ApneaCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_silence" android:textColor="@color/textColorPrimary" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Alarm Dauer" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:id="@+id/txtAlarmDurVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="3s" android:textStyle="bold" android:textColor="@color/primaryColor" android:textSize="16sp"/>
+                </LinearLayout>
+                <SeekBar android:id="@+id/alarmDurSeekBar" android:layout_width="match_parent" android:layout_height="wrap_content" android:min="1" android:max="15" android:progress="3" android:layout_marginTop="16dp"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Stille -->
+        <com.google.android.material.card.MaterialCardView style="@style/Style.ApneaCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_silence" android:textSize="16sp" android:textStyle="bold"/>
                     <TextView android:id="@+id/txtSilenceVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="250" android:textStyle="bold" android:textColor="@color/primaryColor" android:textSize="16sp"/>
                 </LinearLayout>
                 <SeekBar android:id="@+id/silenceSeekBar" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="1000" android:progress="250" android:layout_marginTop="16dp"/>
@@ -56,16 +54,10 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Schnarchen -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/cardColor"
-            android:layout_marginBottom="16dp">
+        <com.google.android.material.card.MaterialCardView style="@style/Style.ApneaCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_snore" android:textColor="@color/textColorPrimary" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_snore" android:textSize="16sp" android:textStyle="bold"/>
                     <TextView android:id="@+id/txtSnoreVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1200" android:textStyle="bold" android:textColor="@color/primaryColor" android:textSize="16sp"/>
                 </LinearLayout>
                 <SeekBar android:id="@+id/snoreSeekBar" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="5000" android:progress="1200" android:layout_marginTop="16dp"/>
@@ -73,16 +65,10 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Atempause -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/cardColor"
-            android:layout_marginBottom="16dp">
+        <com.google.android.material.card.MaterialCardView style="@style/Style.ApneaCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_trigger" android:textColor="@color/textColorPrimary" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_trigger" android:textSize="16sp" android:textStyle="bold"/>
                     <TextView android:id="@+id/txtTriggerVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="12s" android:textStyle="bold" android:textColor="@color/primaryColor" android:textSize="16sp"/>
                 </LinearLayout>
                 <SeekBar android:id="@+id/triggerSeekBar" android:layout_width="match_parent" android:layout_height="wrap_content" android:min="5" android:max="30" android:progress="12" android:layout_marginTop="16dp"/>
@@ -90,16 +76,10 @@
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Abklingzeit -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/cardColor"
-            android:layout_marginBottom="24dp">
+        <com.google.android.material.card.MaterialCardView style="@style/Style.ApneaCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="24dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_cooldown" android:textColor="@color/textColorPrimary" android:textSize="16sp" android:textStyle="bold"/>
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/settings_cooldown" android:textSize="16sp" android:textStyle="bold"/>
                     <TextView android:id="@+id/txtCooldownVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="15m" android:textStyle="bold" android:textColor="@color/primaryColor" android:textSize="16sp"/>
                 </LinearLayout>
                 <SeekBar android:id="@+id/cooldownSeekBar" android:layout_width="match_parent" android:layout_height="wrap_content" android:min="1" android:max="60" android:progress="15" android:layout_marginTop="16dp"/>
@@ -112,7 +92,7 @@
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:text="@string/btn_reset"
-            android:textColor="@color/textColorSecondary"
+            android:textColor="@color/textColorSecondaryLight"
             android:textSize="16sp"
             android:layout_marginBottom="24dp"/>
 

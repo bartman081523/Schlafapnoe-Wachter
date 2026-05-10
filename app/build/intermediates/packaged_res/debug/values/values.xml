@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="backgroundColor">#F5F5F6</color>
-    <color name="black">#FF000000</color>
-    <color name="cardColor">#FFFFFF</color>
+    <color name="backgroundColorDark">#121212</color>
+    <color name="backgroundColorLight">#F5F5F6</color>
+    <color name="black">#000000</color>
+    <color name="cardColorDark">#1E1E1E</color>
+    <color name="cardColorLight">#FFFFFF</color>
     <color name="primaryColor">#2196F3</color>
     <color name="primaryDarkColor">#1976D2</color>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
     <color name="secondaryColor">#FF9800</color>
     <color name="status_alarm">#F44336</color>
     <color name="status_locked">#FF9800</color>
     <color name="status_ready">#4CAF50</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="textColorPrimary">#212121</color>
-    <color name="textColorSecondary">#757575</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="textColorPrimaryDark">#E0E0E0</color>
+    <color name="textColorPrimaryLight">#212121</color>
+    <color name="textColorSecondaryDark">#9E9E9E</color>
+    <color name="textColorSecondaryLight">#757575</color>
+    <color name="white">#FFFFFF</color>
     <string name="app_name">Apnea Monitor</string>
     <string name="btn_exit">Exit</string>
     <string name="btn_reset">Reset Defaults</string>
@@ -37,13 +36,19 @@
     <string name="tab_dashboard">DASHBOARD</string>
     <string name="tab_history">HISTORY</string>
     <string name="tab_settings">SETTINGS</string>
+    <style name="Style.ApneaCard" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/cardColorLight</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">2dp</item>
+    </style>
     <style name="Theme.ApneaApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/secondaryColor</item>
-        <item name="colorSecondaryVariant">@color/status_locked</item>
-        <item name="colorOnSecondary">@color/black</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        
+        
+        <item name="android:windowBackground">@color/backgroundColorLight</item>
     </style>
 </resources>

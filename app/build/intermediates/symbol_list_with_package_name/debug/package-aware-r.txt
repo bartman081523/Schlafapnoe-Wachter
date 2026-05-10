@@ -1245,7 +1245,8 @@ color accent_material_dark
 color accent_material_light
 color androidx_core_ripple_material_light
 color androidx_core_secondary_text_default_material_light
-color backgroundColor
+color backgroundColorDark
+color backgroundColorLight
 color background_floating_material_dark
 color background_floating_material_light
 color background_material_dark
@@ -1261,7 +1262,8 @@ color button_material_dark
 color button_material_light
 color call_notification_answer_color
 color call_notification_decline_color
-color cardColor
+color cardColorDark
+color cardColorLight
 color cardview_dark_background
 color cardview_light_background
 color cardview_shadow_end_color
@@ -1949,9 +1951,6 @@ color primary_text_default_material_dark
 color primary_text_default_material_light
 color primary_text_disabled_material_dark
 color primary_text_disabled_material_light
-color purple_200
-color purple_500
-color purple_700
 color ripple_material_dark
 color ripple_material_light
 color secondaryColor
@@ -1968,10 +1967,10 @@ color switch_thumb_material_dark
 color switch_thumb_material_light
 color switch_thumb_normal_material_dark
 color switch_thumb_normal_material_light
-color teal_200
-color teal_700
-color textColorPrimary
-color textColorSecondary
+color textColorPrimaryDark
+color textColorPrimaryLight
+color textColorSecondaryDark
+color textColorSecondaryLight
 color tooltip_background_dark
 color tooltip_background_light
 color white
@@ -3004,6 +3003,7 @@ id action_text
 id actions
 id activity_chooser_view_content
 id add
+id alarmDurSeekBar
 id alertTitle
 id aligned
 id all
@@ -3387,6 +3387,7 @@ id triggerSeekBar
 id tvAnalysisTitle
 id tvHints
 id tvSummary
+id txtAlarmDurVal
 id txtCooldownVal
 id txtSilenceVal
 id txtSnoreVal
@@ -4186,6 +4187,7 @@ style ShapeAppearanceOverlay_MaterialComponents_MaterialCalendar_Day
 style ShapeAppearanceOverlay_MaterialComponents_MaterialCalendar_Window_Fullscreen
 style ShapeAppearanceOverlay_MaterialComponents_MaterialCalendar_Year
 style ShapeAppearanceOverlay_MaterialComponents_TextInputLayout_FilledBox
+style Style_ApneaCard
 style TextAppearance_AppCompat
 style TextAppearance_AppCompat_Body1
 style TextAppearance_AppCompat_Body2

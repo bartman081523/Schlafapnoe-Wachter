@@ -26,19 +26,18 @@ import com.google.android.material.tabs.TabLayoutMediator
 class MainActivity : AppCompatActivity() {
     private val RECORD_AUDIO_REQUEST_CODE = 101
     
-    // Globale Zustände für UI-Sync
     companion object {
         var status = "BEREIT"
         var detail = "Warte auf Start..."
         var isAlarmRunning = false
         var logContent = "Log: ---"
         
-        // Settings-Werte
         var vol = 50
         var sil = 250
         var sno = 1200
         var tri = 12
         var coo = 3
+        var alarmDur = 3
         var isAutoRecord = false
     }
 
@@ -71,7 +70,6 @@ class MainActivity : AppCompatActivity() {
         }.attach()
 
         LocalBroadcastManager.getInstance(this).registerReceiver(statusReceiver, IntentFilter("APNEA_STATUS_UPDATE"))
-        
         checkForUpdates()
     }
 
@@ -82,36 +80,28 @@ class MainActivity : AppCompatActivity() {
                 val conn = url.openConnection() as java.net.HttpURLConnection
                 conn.requestMethod = "GET"
                 conn.setRequestProperty("Accept", "application/vnd.github.v3+json")
-                
                 if (conn.responseCode == 200) {
                     val response = conn.inputStream.bufferedReader().use { it.readText() }
                     val json = org.json.JSONObject(response)
                     val latestTag = json.getString("tag_name")
-                    val currentVersion = "v0.1.5" // Build-Version
-                    
+                    val currentVersion = "v0.1.8" // Finalizing v0.1.8
                     if (latestTag > currentVersion) {
-                        val downloadUrl = json.getJSONArray("assets").getJSONObject(0).getString("browser_download_url")
-                        runOnUiThread {
-                            showUpdateDialog(latestTag, downloadUrl)
-                        }
+                        runOnUiThread { showUpdateDialog(latestTag) }
                     }
                 }
-            } catch (e: Exception) {
-                Log.e("ApneaApp", "Update check failed", e)
-            }
+            } catch (e: Exception) { Log.e("ApneaApp", "Update check failed", e) }
         }.start()
     }
 
-    private fun showUpdateDialog(tag: String, url: String) {
+    private fun showUpdateDialog(tag: String) {
         androidx.appcompat.app.AlertDialog.Builder(this)
             .setTitle("Update Verfügbar: $tag")
-            .setMessage("Eine neue Version der App ist verfügbar. Möchten Sie die APK jetzt herunterladen?")
+            .setMessage("Eine neue Version der App ist verfügbar.")
             .setPositiveButton("Download") { _, _ ->
                 val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/bartman081523/Schlafapnoe-Wachter/releases/latest"))
                 startActivity(intent)
             }
-            .setNegativeButton("Später", null)
-            .show()
+            .setNegativeButton("Später", null).show()
     }
 
     private val statusReceiver = object : BroadcastReceiver() {
@@ -119,9 +109,6 @@ class MainActivity : AppCompatActivity() {
             status = intent?.getStringExtra("EXTRA_STATUS") ?: ""
             detail = intent?.getStringExtra("EXTRA_DETAIL") ?: ""
             isAlarmRunning = intent?.getBooleanExtra("EXTRA_ALARM_RUNNING", false) ?: false
-            logContent = "Log: $status - $detail"
-            
-            // Fragmente benachrichtigen (via BroadCast oder statischem Refresh)
             LocalBroadcastManager.getInstance(this@MainActivity).sendBroadcast(Intent("UI_REFRESH"))
         }
     }
@@ -133,28 +120,21 @@ class MainActivity : AppCompatActivity() {
         sno = prefs.getInt("snore", 1200)
         tri = prefs.getInt("trigger", 12)
         coo = prefs.getInt("cooldown", 3)
+        alarmDur = prefs.getInt("alarm_duration", 3)
         isAutoRecord = prefs.getBoolean("auto_record", false)
     }
 
     fun saveSettings() {
         val prefs = getSharedPreferences("ApneaPrefs", MODE_PRIVATE)
         prefs.edit().apply {
-            putInt("volume", vol)
-            putInt("silence", sil)
-            putInt("snore", sno)
-            putInt("trigger", tri)
-            putInt("cooldown", coo)
-            putBoolean("auto_record", isAutoRecord)
-            apply()
+            putInt("volume", vol); putInt("silence", sil); putInt("snore", sno)
+            putInt("trigger", tri); putInt("cooldown", coo); putInt("alarm_duration", alarmDur)
+            putBoolean("auto_record", isAutoRecord); apply()
         }
-        
-        // Live-Update an Service senden
         val intent = Intent("APNEA_SETTINGS_UPDATE").apply {
-            putExtra("EXTRA_VOLUME", vol)
-            putExtra("EXTRA_SILENCE_THRESHOLD", sil.toDouble())
-            putExtra("EXTRA_SNORE_THRESHOLD", sno.toDouble())
-            putExtra("EXTRA_TRIGGER_DURATION", tri * 1000L)
-            putExtra("EXTRA_COOLDOWN", coo * 60 * 1000L)
+            putExtra("EXTRA_VOLUME", vol); putExtra("EXTRA_SILENCE_THRESHOLD", sil.toDouble())
+            putExtra("EXTRA_SNORE_THRESHOLD", sno.toDouble()); putExtra("EXTRA_TRIGGER_DURATION", tri * 1000L)
+            putExtra("EXTRA_COOLDOWN", coo * 60 * 1000L); putExtra("EXTRA_ALARM_DURATION", alarmDur * 1000L)
         }
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }
@@ -163,22 +143,14 @@ class MainActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), RECORD_AUDIO_REQUEST_CODE)
         } else {
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            if (!notificationManager.isNotificationPolicyAccessGranted) {
-                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-                startActivity(intent)
-            } else {
-                val serviceIntent = Intent(this, ApneaMonitoringService::class.java).apply {
-                    putExtra("EXTRA_TEST_MODE", isTestMode)
-                    putExtra("EXTRA_AUTO_RECORD", isAutoRecord)
-                    putExtra("EXTRA_VOLUME", vol)
-                    putExtra("EXTRA_SILENCE_THRESHOLD", sil.toDouble())
-                    putExtra("EXTRA_SNORE_THRESHOLD", sno.toDouble())
-                    putExtra("EXTRA_TRIGGER_DURATION", tri * 1000L)
-                    putExtra("EXTRA_COOLDOWN", coo * 60 * 1000L)
-                }
-                startForegroundService(serviceIntent)
+            val serviceIntent = Intent(this, ApneaMonitoringService::class.java).apply {
+                putExtra("EXTRA_TEST_MODE", isTestMode)
+                putExtra("EXTRA_AUTO_RECORD", isAutoRecord)
+                putExtra("EXTRA_VOLUME", vol); putExtra("EXTRA_SILENCE_THRESHOLD", sil.toDouble())
+                putExtra("EXTRA_SNORE_THRESHOLD", sno.toDouble()); putExtra("EXTRA_TRIGGER_DURATION", tri * 1000L)
+                putExtra("EXTRA_COOLDOWN", coo * 60 * 1000L); putExtra("EXTRA_ALARM_DURATION", alarmDur * 1000L)
             }
+            startForegroundService(serviceIntent)
         }
     }
 
@@ -189,172 +161,111 @@ class MainActivity : AppCompatActivity() {
 }
 
 class DashboardFragment : Fragment() {
-    private lateinit var statusText: TextView
-    private lateinit var detailStatusText: TextView
-    private lateinit var btnStopAlarm: Button
-    private lateinit var btnStart: Button
-    private lateinit var btnTest: Button
-    private lateinit var switchAutoRecord: com.google.android.material.switchmaterial.SwitchMaterial
-
+    private lateinit var statusText: TextView; private lateinit var detailStatusText: TextView
+    private lateinit var btnStopAlarm: Button; private lateinit var btnStart: Button
+    private lateinit var btnTest: Button; private lateinit var switchAutoRecord: com.google.android.material.switchmaterial.SwitchMaterial
     private val refreshReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            updateUI()
-        }
+        override fun onReceive(context: Context?, intent: Intent?) { updateUI() }
     }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_dashboard, container, false)
-        statusText = view.findViewById(R.id.statusText)
-        detailStatusText = view.findViewById(R.id.detailStatusText)
-        btnStart = view.findViewById(R.id.btnStart)
-        btnTest = view.findViewById(R.id.btnTest)
-        btnStopAlarm = view.findViewById(R.id.btnStopAlarm)
-        switchAutoRecord = view.findViewById(R.id.switchAutoRecord)
-
+        statusText = view.findViewById(R.id.statusText); detailStatusText = view.findViewById(R.id.detailStatusText)
+        btnStart = view.findViewById(R.id.btnStart); btnTest = view.findViewById(R.id.btnTest)
+        btnStopAlarm = view.findViewById(R.id.btnStopAlarm); switchAutoRecord = view.findViewById(R.id.switchAutoRecord)
         switchAutoRecord.isChecked = MainActivity.isAutoRecord
-        switchAutoRecord.setOnCheckedChangeListener { _, isChecked ->
-            MainActivity.isAutoRecord = isChecked
-            (activity as MainActivity).saveSettings()
-        }
-
+        switchAutoRecord.setOnCheckedChangeListener { _, isChecked -> MainActivity.isAutoRecord = isChecked; (activity as MainActivity).saveSettings() }
         btnStart.setOnClickListener { (activity as MainActivity).checkPermissionsAndStart(false) }
         btnTest.setOnClickListener { (activity as MainActivity).checkPermissionsAndStart(true) }
-        btnStopAlarm.setOnClickListener {
-            val intent = Intent(activity, ApneaMonitoringService::class.java).apply { action = "ACTION_STOP_ALARM" }
-            activity?.startForegroundService(intent)
-        }
-        view.findViewById<Button>(R.id.btnStop).setOnClickListener {
-            activity?.stopService(Intent(activity, ApneaMonitoringService::class.java))
-            MainActivity.status = "BEREIT"
-            MainActivity.detail = "Wird gestoppt..."
-            updateUI()
-        }
-        view.findViewById<Button>(R.id.btnExit).setOnClickListener {
-            activity?.stopService(Intent(activity, ApneaMonitoringService::class.java))
-            activity?.finish()
-        }
-
+        btnStopAlarm.setOnClickListener { val intent = Intent(activity, ApneaMonitoringService::class.java).apply { action = "ACTION_STOP_ALARM" }; activity?.startForegroundService(intent) }
+        view.findViewById<Button>(R.id.btnStop).setOnClickListener { activity?.stopService(Intent(activity, ApneaMonitoringService::class.java)); MainActivity.status = "BEREIT"; updateUI() }
+        view.findViewById<Button>(R.id.btnExit).setOnClickListener { activity?.stopService(Intent(activity, ApneaMonitoringService::class.java)); activity?.finish() }
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(refreshReceiver, IntentFilter("UI_REFRESH"))
-        updateUI()
-        return view
+        updateUI(); return view
     }
-
     private fun updateUI() {
-        statusText.text = MainActivity.status
-        detailStatusText.text = MainActivity.detail
+        statusText.text = MainActivity.status; detailStatusText.text = MainActivity.detail
         btnStopAlarm.visibility = if (MainActivity.isAlarmRunning) View.VISIBLE else View.GONE
-        
         val running = !(MainActivity.status == "BEREIT" || MainActivity.status == "Gestoppt")
-        btnStart.isEnabled = !running
-        btnTest.isEnabled = !running
+        btnStart.isEnabled = !running; btnTest.isEnabled = !running
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(refreshReceiver)
-    }
+    override fun onDestroyView() { super.onDestroyView(); LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(refreshReceiver) }
 }
 
 class SettingsFragment : Fragment() {
+    private lateinit var volBar: SeekBar; private lateinit var volTxt: TextView
+    private lateinit var silBar: SeekBar; private lateinit var silTxt: TextView
+    private lateinit var snoBar: SeekBar; private lateinit var snoTxt: TextView
+    private lateinit var triBar: SeekBar; private lateinit var triTxt: TextView
+    private lateinit var cooBar: SeekBar; private lateinit var cooTxt: TextView
+    private lateinit var durBar: SeekBar; private lateinit var durTxt: TextView
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
-        
-        val volBar = view.findViewById<SeekBar>(R.id.volumeSeekBar)
-        val silBar = view.findViewById<SeekBar>(R.id.silenceSeekBar)
-        val snoBar = view.findViewById<SeekBar>(R.id.snoreSeekBar)
-        val triBar = view.findViewById<SeekBar>(R.id.triggerSeekBar)
-        val cooBar = view.findViewById<SeekBar>(R.id.cooldownSeekBar)
+        volBar = view.findViewById(R.id.volumeSeekBar); volTxt = view.findViewById(R.id.txtVolumeVal)
+        silBar = view.findViewById(R.id.silenceSeekBar); silTxt = view.findViewById(R.id.txtSilenceVal)
+        snoBar = view.findViewById(R.id.snoreSeekBar); snoTxt = view.findViewById(R.id.txtSnoreVal)
+        triBar = view.findViewById(R.id.triggerSeekBar); triTxt = view.findViewById(R.id.txtTriggerVal)
+        cooBar = view.findViewById(R.id.cooldownSeekBar); cooTxt = view.findViewById(R.id.txtCooldownVal)
+        durBar = view.findViewById(R.id.alarmDurSeekBar); durTxt = view.findViewById(R.id.txtAlarmDurVal)
 
-        val volTxt = view.findViewById<TextView>(R.id.txtVolumeVal)
-        val silTxt = view.findViewById<TextView>(R.id.txtSilenceVal)
-        val snoTxt = view.findViewById<TextView>(R.id.txtSnoreVal)
-        val triTxt = view.findViewById<TextView>(R.id.txtTriggerVal)
-        val cooTxt = view.findViewById<TextView>(R.id.txtCooldownVal)
-
-        // Initialwerte setzen
-        volBar.progress = MainActivity.vol; volTxt.text = "${MainActivity.vol}%"
-        silBar.progress = MainActivity.sil; silTxt.text = "${MainActivity.sil}"
-        snoBar.progress = MainActivity.sno; snoTxt.text = "${MainActivity.sno}"
-        triBar.progress = MainActivity.tri; triTxt.text = "${MainActivity.tri}s"
-        cooBar.progress = MainActivity.coo; cooTxt.text = "${MainActivity.coo}m"
+        val refresh = {
+            volBar.progress = MainActivity.vol; volTxt.text = "${MainActivity.vol}%"
+            silBar.progress = MainActivity.sil; silTxt.text = "${MainActivity.sil}"
+            snoBar.progress = MainActivity.sno; snoTxt.text = "${MainActivity.sno}"
+            triBar.progress = MainActivity.tri; triTxt.text = "${MainActivity.tri}s"
+            cooBar.progress = MainActivity.coo; cooTxt.text = "${MainActivity.coo}m"
+            durBar.progress = MainActivity.alarmDur; durTxt.text = "${MainActivity.alarmDur}s"
+        }
+        refresh()
 
         val listener = object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(s: SeekBar, p: Int, f: Boolean) {
+            override fun onProgressChanged(s: SeekBar, p: Int, fromUser: Boolean) {
+                if (!fromUser) return
                 when(s.id) {
                     R.id.volumeSeekBar -> { MainActivity.vol = p; volTxt.text = "$p%" }
                     R.id.silenceSeekBar -> { MainActivity.sil = p; silTxt.text = "$p" }
                     R.id.snoreSeekBar -> { MainActivity.sno = p; snoTxt.text = "$p" }
                     R.id.triggerSeekBar -> { MainActivity.tri = p; triTxt.text = "${p}s" }
                     R.id.cooldownSeekBar -> { MainActivity.coo = p; cooTxt.text = "${p}m" }
+                    R.id.alarmDurSeekBar -> { MainActivity.alarmDur = p; durTxt.text = "${p}s" }
                 }
                 (activity as MainActivity).saveSettings()
             }
-            override fun onStartTrackingTouch(s: SeekBar) {}
-            override fun onStopTrackingTouch(s: SeekBar) {}
+            override fun onStartTrackingTouch(s: SeekBar?) {}
+            override fun onStopTrackingTouch(s: SeekBar?) {}
         }
-
-        volBar.setOnSeekBarChangeListener(listener)
-        silBar.setOnSeekBarChangeListener(listener)
-        snoBar.setOnSeekBarChangeListener(listener)
-        triBar.setOnSeekBarChangeListener(listener)
-        cooBar.setOnSeekBarChangeListener(listener)
+        listOf(volBar, silBar, snoBar, triBar, cooBar, durBar).forEach { it.setOnSeekBarChangeListener(listener) }
+        
+        // Listen for internal refresh (from AnalysisActivity)
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(object: BroadcastReceiver() {
+            override fun onReceive(c: Context?, i: Intent?) { refresh() }
+        }, IntentFilter("UI_REFRESH"))
 
         view.findViewById<Button>(R.id.btnResetSettings).setOnClickListener {
-            MainActivity.vol = 50
-            MainActivity.sil = 250
-            MainActivity.sno = 1200
-            MainActivity.tri = 12
-            MainActivity.coo = 3
-            
-            // UI aktualisieren
-            volBar.progress = MainActivity.vol; volTxt.text = "${MainActivity.vol}%"
-            silBar.progress = MainActivity.sil; silTxt.text = "${MainActivity.sil}"
-            snoBar.progress = MainActivity.sno; snoTxt.text = "${MainActivity.sno}"
-            triBar.progress = MainActivity.tri; triTxt.text = "${MainActivity.tri}s"
-            cooBar.progress = MainActivity.coo; cooTxt.text = "${MainActivity.coo}m"
-            
-            (activity as MainActivity).saveSettings()
+            MainActivity.vol = 50; MainActivity.sil = 250; MainActivity.sno = 1200
+            MainActivity.tri = 12; MainActivity.coo = 3; MainActivity.alarmDur = 3
+            refresh(); (activity as MainActivity).saveSettings()
         }
-
         return view
     }
 }
 
 class HistoryFragment : Fragment() {
-    private lateinit var listView: android.widget.ListView
-    private lateinit var emptyText: TextView
-
+    private lateinit var listView: android.widget.ListView; private lateinit var emptyText: TextView
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_history, container, false)
-        listView = view.findViewById(R.id.historyListView)
-        emptyText = view.findViewById(R.id.historyEmptyText)
-
-        loadHistory()
-        return view
+        listView = view.findViewById(R.id.historyListView); emptyText = view.findViewById(R.id.historyEmptyText)
+        loadHistory(); return view
     }
-
     private fun loadHistory() {
         val dir = context?.getExternalFilesDir(null)
         val files = dir?.listFiles { file -> file.name.startsWith("night_data_") && file.name.endsWith(".csv") }
             ?.sortedByDescending { it.lastModified() } ?: emptyList()
-
-        if (files.isEmpty()) {
-            emptyText.visibility = View.VISIBLE
-            listView.visibility = View.GONE
-        } else {
-            emptyText.visibility = View.GONE
-            listView.visibility = View.VISIBLE
-            
-            val fileNames = files.map { it.name }
-            val adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, fileNames)
-            listView.adapter = adapter
-            
+        if (files.isEmpty()) { emptyText.visibility = View.VISIBLE; listView.visibility = View.GONE } else {
+            emptyText.visibility = View.GONE; listView.visibility = View.VISIBLE
+            listView.adapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, files.map { it.name })
             listView.setOnItemClickListener { _, _, position, _ ->
-                val selectedFile = files[position]
-                val intent = Intent(context, AnalysisActivity::class.java).apply {
-                    putExtra("EXTRA_CSV_PATH", selectedFile.absolutePath)
-                }
-                startActivity(intent)
+                startActivity(Intent(context, AnalysisActivity::class.java).apply { putExtra("EXTRA_CSV_PATH", files[position].absolutePath) })
             }
         }
     }
