@@ -108,7 +108,7 @@ MERGED from [com.google.android.odml:image:1.0.0-beta1] /home/julian/.gradle/cac
 	android:label
 		ADDED from /run/media/julian/ML3/Schlafapnoe_Projekt/android_app_production/app/src/main/AndroidManifest.xml:9:18-47
 	android:theme
-		ADDED from /run/media/julian/ML3/Schlafapnoe_Projekt/android_app_production/app/src/main/AndroidManifest.xml:9:48-92
+		ADDED from /run/media/julian/ML3/Schlafapnoe_Projekt/android_app_production/app/src/main/AndroidManifest.xml:9:48-85
 service#com.example.apnea.ApneaMonitoringService
 ADDED from /run/media/julian/ML3/Schlafapnoe_Projekt/android_app_production/app/src/main/AndroidManifest.xml:10:9-12:44
 	android:exported

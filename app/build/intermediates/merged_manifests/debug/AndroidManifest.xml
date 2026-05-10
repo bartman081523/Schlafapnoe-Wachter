@@ -25,7 +25,7 @@
         android:debuggable="true"
         android:extractNativeLibs="true"
         android:label="Apnoe Edge AI"
-        android:theme="@style/Theme.AppCompat.Light" >
+        android:theme="@style/Theme.ApneaApp" >
         <service
             android:name="com.example.apnea.ApneaMonitoringService"
             android:exported="true"

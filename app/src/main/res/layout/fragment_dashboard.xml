@@ -1,112 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
+        android:padding="24dp">
 
-        <androidx.cardview.widget.CardView
+        <!-- Status Card -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            android:layout_marginBottom="32dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@color/cardColor">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp"
-                android:gravity="center">
+                android:gravity="center"
+                android:padding="32dp">
+
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:src="@android:drawable/ic_dialog_info"
+                    app:tint="@color/primaryColor"
+                    android:layout_marginBottom="16dp"/>
 
                 <TextView
                     android:id="@+id/statusText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/status_ready"
-                    android:textSize="20sp"
-                    android:textColor="#444444"
+                    android:textSize="28sp"
+                    android:textColor="@color/textColorPrimary"
                     android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/detailStatusText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Warte auf Start..."
-                    android:textSize="14sp"
+                    android:text="System ist bereit"
+                    android:textSize="16sp"
+                    android:textColor="@color/textColorSecondary"
                     android:layout_marginTop="8dp"/>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
-        <Button
+        <!-- Start Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnStart"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:text="@string/btn_start"
-            android:backgroundTint="#4CAF50"
+            app:cornerRadius="12dp"
             android:textSize="18sp"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="16dp"/>
 
-        <Button
+        <!-- Test Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTest"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:text="@string/btn_test"
-            android:backgroundTint="#FF9800"
-            android:textSize="18sp"
-            android:layout_marginBottom="12dp"/>
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchAutoRecord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/switch_auto_record"
+            app:cornerRadius="12dp"
             android:textSize="16sp"
-            android:layout_marginBottom="12dp"
-            android:checked="false" />
+            app:strokeColor="@color/secondaryColor"
+            android:textColor="@color/secondaryColor"
+            android:layout_marginBottom="24dp"/>
 
-        <Button
+        <!-- Auto Record Switch -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/cardColor">
+            
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchAutoRecord"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="@string/switch_auto_record"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/textColorPrimary"
+                android:checked="false" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Alarm Stop (Hidden initially) -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnStopAlarm"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:text="@string/btn_stop_alarm"
-            android:backgroundTint="#2196F3"
+            app:cornerRadius="12dp"
             android:textSize="18sp"
-            android:layout_marginBottom="12dp"
+            android:backgroundTint="@color/status_alarm"
+            android:layout_marginBottom="16dp"
             android:visibility="gone"/>
 
-        <Button
+        <!-- Stop App Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnStop"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:text="@string/btn_stop"
-            android:backgroundTint="#F44336"
-            android:textSize="18sp"
-            android:layout_marginBottom="12dp"/>
+            android:textColor="@color/status_alarm"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
 
-        <Button
+        <!-- Exit App Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnExit"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="64dp"
             android:text="@string/btn_exit"
-            android:backgroundTint="#607D8B"
-            android:textSize="18sp"
+            android:textColor="@color/textColorSecondary"
+            android:textSize="16sp"
             android:layout_marginBottom="24dp"/>
 
-        <TextView
-            android:id="@+id/logDisplay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Log: ---"
-            android:textSize="12sp"
-            android:fontFamily="monospace"
-            android:padding="8dp"
-            android:background="#EEEEEE"/>
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

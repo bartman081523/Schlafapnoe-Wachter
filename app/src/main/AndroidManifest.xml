@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
-    <application android:label="Apnoe Edge AI" android:theme="@style/Theme.AppCompat.Light">
+    <application android:label="Apnoe Edge AI" android:theme="@style/Theme.ApneaApp">
         <service android:name=".ApneaMonitoringService"
                  android:foregroundServiceType="microphone"
                  android:exported="true" />

@@ -152,7 +152,6 @@ class DashboardFragment : Fragment() {
     private lateinit var btnStopAlarm: Button
     private lateinit var btnStart: Button
     private lateinit var btnTest: Button
-    private lateinit var logDisplay: TextView
     private lateinit var switchAutoRecord: com.google.android.material.switchmaterial.SwitchMaterial
 
     private val refreshReceiver = object : BroadcastReceiver() {
@@ -168,7 +167,6 @@ class DashboardFragment : Fragment() {
         btnStart = view.findViewById(R.id.btnStart)
         btnTest = view.findViewById(R.id.btnTest)
         btnStopAlarm = view.findViewById(R.id.btnStopAlarm)
-        logDisplay = view.findViewById(R.id.logDisplay)
         switchAutoRecord = view.findViewById(R.id.switchAutoRecord)
 
         switchAutoRecord.isChecked = MainActivity.isAutoRecord
@@ -202,7 +200,6 @@ class DashboardFragment : Fragment() {
     private fun updateUI() {
         statusText.text = MainActivity.status
         detailStatusText.text = MainActivity.detail
-        logDisplay.text = MainActivity.logContent
         btnStopAlarm.visibility = if (MainActivity.isAlarmRunning) View.VISIBLE else View.GONE
         
         val running = !(MainActivity.status == "BEREIT" || MainActivity.status == "Gestoppt")

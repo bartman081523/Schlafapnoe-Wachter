@@ -43,8 +43,8 @@
 26        android:extractNativeLibs="true"
 27        android:label="Apnoe Edge AI"
 27-->/run/media/julian/ML3/Schlafapnoe_Projekt/android_app_production/app/src/main/AndroidManifest.xml:9:18-47
-28        android:theme="@style/Theme.AppCompat.Light" >
-28-->/run/media/julian/ML3/Schlafapnoe_Projekt/android_app_production/app/src/main/AndroidManifest.xml:9:48-92
+28        android:theme="@style/Theme.ApneaApp" >
+28-->/run/media/julian/ML3/Schlafapnoe_Projekt/android_app_production/app/src/main/AndroidManifest.xml:9:48-85
 29        <service
 29-->/run/media/julian/ML3/Schlafapnoe_Projekt/android_app_production/app/src/main/AndroidManifest.xml:10:9-12:44
 30            android:name="com.example.apnea.ApneaMonitoringService"

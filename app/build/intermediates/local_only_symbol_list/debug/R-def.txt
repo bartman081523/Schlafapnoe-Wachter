@@ -1,5 +1,22 @@
 R_DEF: Internal format may change without notice
 local
+color backgroundColor
+color black
+color cardColor
+color primaryColor
+color primaryDarkColor
+color purple_200
+color purple_500
+color purple_700
+color secondaryColor
+color status_alarm
+color status_locked
+color status_ready
+color teal_200
+color teal_700
+color textColorPrimary
+color textColorSecondary
+color white
 id apneaChartView
 id btnExit
 id btnResetSettings
@@ -12,7 +29,6 @@ id detailStatusText
 id historyEmptyText
 id historyListView
 id historyTitle
-id logDisplay
 id silenceSeekBar
 id snoreSeekBar
 id statusText
@@ -54,3 +70,4 @@ string switch_auto_record
 string tab_dashboard
 string tab_history
 string tab_settings
+style Theme.ApneaApp
