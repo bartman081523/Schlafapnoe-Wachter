@@ -19,6 +19,7 @@ class AnalysisActivity : AppCompatActivity() {
         val tvTitle = findViewById<TextView>(R.id.tvAnalysisTitle)
         val tvSummary = findViewById<TextView>(R.id.tvSummary)
         val tvHints = findViewById<TextView>(R.id.tvHints)
+        val btnApply = findViewById<android.widget.Button>(R.id.btnApplyRecommendation)
         val chartView = findViewById<ApneaChartView>(R.id.apneaChartView)
         
         tvTitle.text = "Auswertung: ${file.name}"
@@ -94,14 +95,46 @@ class AnalysisActivity : AppCompatActivity() {
         chartView.setData(displaySnore, displayApnea)
 
         var hints = "Hinweise zur Optimierung:\n"
+        var canApply = false
+        var recommendedSilChange = 0
+        var recommendedTriChange = 0
+        
         if (finalAlarmCount == 0) {
             hints += "- Keine Alarme erkannt. Falls Sie Atemaussetzer hatten, reduzieren Sie die 'Stille-Schwelle' (RMS).\n"
+            canApply = true
+            recommendedSilChange = -50
         } else if (finalAlarmCount > 15) {
             hints += "- Sehr viele Alarme ($finalAlarmCount). Möglicherweise ist die App zu empfindlich.\n"
+            canApply = true
+            recommendedSilChange = 50
         } else {
             hints += "- Alarmanzahl ($finalAlarmCount) im erwarteten Rahmen für unbehandelte Apnoe.\n"
         }
         
         tvHints.text = hints
+
+        if (canApply) {
+            btnApply.visibility = android.view.View.VISIBLE
+            btnApply.setOnClickListener {
+                val prefs = getSharedPreferences("ApneaPrefs", MODE_PRIVATE)
+                val currentSil = prefs.getInt("silence", 250)
+                val currentTri = prefs.getInt("trigger", 12)
+                
+                val newSil = (currentSil + recommendedSilChange).coerceIn(50, 1000)
+                val newTri = (currentTri + recommendedTriChange).coerceIn(5, 30)
+                
+                prefs.edit().apply {
+                    putInt("silence", newSil)
+                    putInt("trigger", newTri)
+                }.apply()
+                
+                // Force sync in MainActivity if running
+                MainActivity.sil = newSil
+                MainActivity.tri = newTri
+                
+                android.widget.Toast.makeText(this, "Einstellungen wurden optimiert", android.widget.Toast.LENGTH_SHORT).show()
+                btnApply.visibility = android.view.View.GONE
+            }
+        }
     }
 }

@@ -3025,6 +3025,7 @@ id beginning
 id blocking
 id bottom
 id bounce
+id btnApplyRecommendation
 id btnExit
 id btnResetSettings
 id btnStart

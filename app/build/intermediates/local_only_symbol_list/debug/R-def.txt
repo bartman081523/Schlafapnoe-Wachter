@@ -18,6 +18,7 @@ color textColorPrimary
 color textColorSecondary
 color white
 id apneaChartView
+id btnApplyRecommendation
 id btnExit
 id btnResetSettings
 id btnStart
