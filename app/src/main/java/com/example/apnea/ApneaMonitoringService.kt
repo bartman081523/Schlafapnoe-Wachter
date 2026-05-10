@@ -468,7 +468,8 @@ class ApneaMonitoringService : Service(), SensorEventListener {
             
             // NEU: Wenn ML Schnarchen erkennt, lastSnoreTime updaten
             // Nur bei hoher Konfidenz (0.80 statt 0.70)
-            if (snoreScore > 0.80f) {
+            val confirmThresh = if (isTestMode) 0.15f else 0.80f
+            if (snoreScore > confirmThresh) {
                 lastSnoreTime = System.currentTimeMillis()
                 Log.d("ADB_SIGNAL", "ML_DETECT: Snore confirmed via ML (Score=${String.format("%.2f", snoreScore)})")
                 sendStatusUpdate("AKTIV", "Schnarchen (ML)")
@@ -530,6 +531,11 @@ class ApneaMonitoringService : Service(), SensorEventListener {
     }
 
     private fun triggerIntervention(reason: String) {
+        val timestamp = System.currentTimeMillis()
+        try {
+            csvOutputStream?.write(("$timestamp,ALARM_START,0,0,0,0\n").toByteArray())
+        } catch (e: Exception) {}
+
         Log.i("ADB_SIGNAL", "ALARM: START - Reason: $reason")
         audioIntervention.triggerAlarm(alarmVolume)
         isAlarmRunning = true
